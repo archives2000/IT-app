@@ -86,7 +86,7 @@ def HAM():
 
     monitor_type = st.selectbox("Model Category", ["", "Monitor", "PC", "IPhone"], format_func=lambda x: x if x else "Select Model Category")
     if monitor_type:
-        with st.form(key='entry_form', clear_on_submit=True):
+        with st.form(key='entry_form', clear_on_submit=False):
             serial_number = st.text_input("Serial Number")
             model = st.text_input("Model")
             default_manufacturer = manufacturer_defaults.get(monitor_type.lower(), "HP")
