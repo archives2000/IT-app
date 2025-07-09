@@ -7,6 +7,7 @@ page = st.sidebar.selectbox("Navigation", ["Dashboard", "Monitor Inventory", "HA
 
 def dashboard():
     st.title("Dashboard")
+    st.text_input("hello")
 
 def monitor_inventory_page():
 
