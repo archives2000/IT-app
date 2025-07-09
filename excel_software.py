@@ -99,7 +99,7 @@ def HAM():
             submitted = st.form_submit_button("Add Entry")
 
             # Collect Data if every box is filled
-            if submitted and serial_number and state and stockroom and support_group and purchase_date:
+            if submitted and serial_number and model and state and stockroom and support_group and purchase_date:
 
                 # Duplicates
                 if serial_number in [row['Serial Number'] for row in st.session_state['ham_data']]:
