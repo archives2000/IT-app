@@ -29,9 +29,10 @@ def ham():
                             format_func=lambda x: x if x else "Select Model Category",
                             key="monitor_type")
     if monitor_type:
-        with st.form(key='entry_form', clear_on_submit=False):
+
+        with st.form(key='entry_form', clear_on_submit=True):
             serial_number = st.text_input("Serial Number")
-            model = st.text_input("Model", key="model")
+            model = st.text_input("Model", key="model", value="HP EliteBook 850 G8")
             default_manufacturer = manufacturer_defaults.get(monitor_type.lower(), "HP")
             manufacturer = st.text_input("Manufacturer", value=default_manufacturer)
             state = st.selectbox("State", ["In Stock", "Replace Full", "Replace One", "Replace Stock"])
