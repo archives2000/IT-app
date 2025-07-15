@@ -70,21 +70,43 @@ def ham():
         df = pd.DataFrame(st.session_state['ham_data'])
         st.dataframe(df, use_container_width=True)
 
-        # Save to Excel 
         if cols[0].button("Save to Excel"):
-            out_df = pd.DataFrame(st.session_state['ham_data'])
-            out_df.to_excel(excel_file, sheet_name=excel_sheet_name, index=False)
-            st.success(f"Data written to `{excel_file}`")
+            if not st.session_state['ham_data']:
+                st.warning("No data to save.")
+            else:
+                all_data = pd.DataFrame(st.session_state['ham_data'])
 
-            # Download directly
-            buffer = io.BytesIO()
-            out_df.to_excel(buffer, index=False, engine='openpyxl')
-            buffer.seek(0)
-            st.download_button(
-                label="Download Updated Excel",
-                data= buffer,
-                file_name="HAM-CHLA.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                # --- Write to disk AND (later) to a BytesIO buffer ---
+                def write_multisheet(writer):
+                    for category in ["Monitor", "PC", "IPhone"]:
+                        filtered = all_data[all_data["Monitor Type"] == category]
+                        if not filtered.empty:
+                            filtered.to_excel(
+                                writer,
+                                sheet_name=category,
+                                index=False
+                            )
+
+                # 1  save to disk
+                try:
+                    with pd.ExcelWriter(excel_file, engine="openpyxl", mode="w") as w:
+                        write_multisheet(w)
+                    st.success(f"Data saved to `{excel_file}` with per-category sheets.")
+                except Exception as e:
+                    st.error(f"Error saving Excel file: {e}")
+
+                # 2  build download file with the same sheets
+                buffer = io.BytesIO()
+                with pd.ExcelWriter(buffer, engine="openpyxl", mode="w") as w:
+                    write_multisheet(w)
+                buffer.seek(0)
+
+                st.download_button(
+                    "Download Updated Excel",
+                    data=buffer,
+                    file_name="HAM-CHLA.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
 
         if cols[1].button("Clear Current Entry", type="secondary"):
             for key in ["model", "Serial Number", "Manufacturer", "Stockroom", "Support group", "Purchase date", "Comments"]:
